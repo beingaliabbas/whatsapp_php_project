@@ -51,4 +51,15 @@ function registerUser($username, $password, $email) {
 
     return false; // Registration failed
 }
+function getUserById($userId) {
+    global $conn; // ✅ Use global connection like other functions
+
+    $sql = "SELECT * FROM users WHERE user_id = :user_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 ?>

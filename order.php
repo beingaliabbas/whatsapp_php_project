@@ -15,46 +15,52 @@ $plan = $plans[$selected_plan_key] ?? $plans['basic'];
 <head>
   <meta charset="UTF-8">
   <title>Confirm Package - WhatsApp API</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container mt-5">
-  <div class="col-lg-8 offset-lg-2">
-    <div class="bg-white p-4 shadow rounded">
-      <h3 class="mb-4">📋 Enter Your Details</h3>
+<body class="bg-gray-50 text-gray-800">
 
-      <form action="checkout_invoice.php" method="POST">
-        <!-- Package Summary -->
-        <div class="mb-4">
-          <h5>📦 Selected Package</h5>
-          <ul>
-            <li><strong>Package:</strong> <?= $plan['name'] ?> (<?= $plan['accounts'] ?>)</li>
-            <li><strong>Messages:</strong> <?= $plan['messages'] ?><?= $plan['media'] === 'Yes' ? ' + Media' : '' ?></li>
-            <li><strong>Price:</strong> <span class="text-success">PKR <?= number_format($plan['price_pkr']) ?></span></li>
-          </ul>
-        </div>
+<?php include("header.php");?> 
 
-        <!-- User Details -->
-        <input type="hidden" name="plan_key" value="<?= $selected_plan_key ?>">
-        <div class="mb-3">
-          <label class="form-label">Full Name *</label>
-          <input type="text" name="name" class="form-control" required>
-        </div>
+<div class="max-w-3xl mx-auto mt-10 px-4">
+  <div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-6 text-indigo-600">📋 Enter Your Details</h2>
 
-        <div class="mb-3">
-          <label class="form-label">Email *</label>
-          <input type="email" name="email" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Phone (Optional)</label>
-          <input type="text" name="phone" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Next: Checkout & Generate Invoice</button>
-      </form>
+    <!-- Package Summary -->
+    <div class="bg-indigo-50 p-4 rounded-md mb-6">
+      <h3 class="text-lg font-semibold text-indigo-700 mb-2">📦 Selected Package</h3>
+      <ul class="text-sm text-gray-700 space-y-1">
+        <li><strong>Package:</strong> <?= $plan['name'] ?> (<?= $plan['accounts'] ?>)</li>
+        <li><strong>Messages:</strong> <?= $plan['messages'] ?><?= $plan['media'] === 'Yes' ? ' + Media' : '' ?></li>
+        <li><strong>Price:</strong> <span class="text-green-600 font-medium">PKR <?= number_format($plan['price_pkr']) ?></span></li>
+      </ul>
     </div>
+
+    <!-- User Details Form -->
+    <form action="checkout_invoice" method="POST" class="space-y-5">
+      <input type="hidden" name="plan_key" value="<?= $selected_plan_key ?>">
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Full Name <span class="text-red-500">*</span></label>
+        <input type="text" name="name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Email <span class="text-red-500">*</span></label>
+        <input type="email" name="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Phone (Optional)</label>
+        <input type="text" name="phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md text-lg font-medium transition duration-200">
+        Next: Checkout & Generate Invoice
+      </button>
+    </form>
   </div>
 </div>
+
 </body>
 </html>

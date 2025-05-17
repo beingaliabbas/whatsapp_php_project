@@ -1,11 +1,10 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: login');
     exit();
 }
 
-require 'functions.php';
 
 $nodeServerURL = "http://localhost:3000";
 $userId = $_SESSION['user_id'];
@@ -25,7 +24,7 @@ if (!$apiKey) {
 }
 
 // Use your own domain for the send-message endpoint.
-$proxyEndpoint = $apiKey ? "https://localhost/whatsapp_php_project/send-message/$userId" : "";
+$proxyEndpoint = $apiKey ? "http://localhost/whatsapp_php_project/send-message/$userId" : "";
 $apiEndpoint = $proxyEndpoint;
 
 $messageStatus = '';
@@ -34,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['phone_number'])) {
     $message = "Hello, this is a test message from your WhatsApp Api!";
 
     // Use the proxy endpoint on your PHP domain
-    $apiUrl = "https://localhost/whatsapp_php_project/send-message/$userId";
+    $apiUrl = "http://localhost/whatsapp_php_project/send-message/$userId";
     $data = json_encode([
         'userId'    => $userId,
         'apiKey'    => $apiKey,
@@ -134,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['phone_number'])) {
                 <p class="text-gray-400 mt-1 dark:text-gray-300">Welcome, <?= $username ?>!</p>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="logout.php" class="text-red-500 hover:text-red-300 transition-colors">Logout</a>
+                <a href="logout" class="text-red-500 hover:text-red-300 transition-colors">Logout</a>
                 <div id="header-status" class="flex items-center space-x-2">
                     <div class="w-3 h-3 rounded-full bg-gray-600 pulse"></div>
                     <span id="status" class="text-gray-300 dark:text-gray-200">Connecting...</span>
@@ -146,28 +145,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['phone_number'])) {
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Column -->
             <div class="lg:col-span-1 space-y-6">
-                <!-- Connection Section -->
-                <div class="section-card rounded-xl p-6 shadow-xl fade-in">
-                    <h2 class="text-xl font-semibold text-white dark:text-gray-100 mb-4">Connection Manager</h2>
-                    <div id="qr-container" class="hidden">
-                        <div class="mb-4">
-                            <h3 class="text-gray-300 mb-2 dark:text-gray-200">Scan QR Code</h3>
-                            <div class="relative aspect-square bg-gray-800 rounded-lg overflow-hidden">
-                                <div class="loader absolute inset-0 m-auto ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12"></div>
-                                <img id="qr-img" class="w-full h-full object-contain hidden" src="" alt="QR Code" />
-                            </div>
-                        </div>
-                        <button onclick="window.location.reload()" class="w-full py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
-                            Refresh Connection
-                        </button>
-                    </div>
-                    <div id="connection-status" class="text-center py-4 hidden">
-                        <div class="text-green-400 mb-2">✅ Connected Successfully</div>
-                        <button id="logout-button" class="text-sm text-red-400 hover:text-red-300 transition-colors">
-                            Disconnect Session
-                        </button>
-                    </div>
+               <?php
+require 'functions.php';
+$user = getUserById($_SESSION['user_id']);
+$planNotActivated = (!$user || !$user['plan_activated']);
+?>
+
+<!-- Connection Section -->
+<div class="section-card rounded-xl p-6 shadow-xl fade-in">
+    <h2 class="text-xl font-semibold text-white dark:text-gray-100 mb-4">Connection Manager</h2>
+
+    <?php if ($planNotActivated): ?>
+        <!-- Plan Not Activated Message -->
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 my-4 rounded-lg" role="alert">
+            <p class="font-bold">Plan Not Activated</p>
+            <p class="text-sm">Your subscription plan is not active. Please activate your plan to access connection features.</p>
+            <a href="index" class="inline-block mt-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded transition-colors">
+                View Plans
+            </a>
+        </div>
+    <?php else: ?>
+        <!-- QR & Connection Management -->
+        <div id="qr-container" class="hidden">
+            <div class="mb-4">
+                <h3 class="text-gray-300 mb-2 dark:text-gray-200">Scan QR Code</h3>
+                <div class="relative aspect-square bg-gray-800 rounded-lg overflow-hidden">
+                    <div class="loader absolute inset-0 m-auto ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12"></div>
+                    <img id="qr-img" class="w-full h-full object-contain hidden" src="" alt="QR Code" />
                 </div>
+            </div>
+            <button onclick="window.location.reload()" class="w-full py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
+                Refresh Connection
+            </button>
+        </div>
+        <div id="connection-status" class="text-center py-4 hidden">
+            <div class="text-green-400 mb-2">✅ Connected Successfully</div>
+            <button id="logout-button" class="text-sm text-red-400 hover:text-red-300 transition-colors">
+                Disconnect Session
+            </button>
+        </div>
+    <?php endif; ?>
+</div>
+
 
                 <!-- Enhanced API Section -->
                 <div class="section-card rounded-xl p-6 shadow-xl fade-in">
@@ -298,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['phone_number'])) {
             if (ready && apiKey) {
                 elements.apiKey.innerText = apiKey;
                 // Use your PHP domain proxy endpoint for the API endpoint display
-                elements.apiEndpoint.innerText = "https://localhost/whatsapp_php_project/send-message/<?= $userId ?>";
+                elements.apiEndpoint.innerText = "http://localhost/whatsapp_php_project/send-message/<?= $userId ?>";
             } else {
                 elements.apiKey.innerText = "Not Available";
                 elements.apiEndpoint.innerText = "Not Available";

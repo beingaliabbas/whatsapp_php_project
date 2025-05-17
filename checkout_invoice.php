@@ -21,56 +21,66 @@ $date = date("d M, Y");
 <head>
   <meta charset="UTF-8">
   <title>Checkout Invoice - WhatsApp API</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container mt-5 mb-5">
-  <div class="col-lg-8 offset-lg-2">
-    <div class="bg-white p-4 shadow rounded">
-      <h3 class="mb-4">🧾 Checkout & Upload Payment</h3>
+<body class="bg-gray-50 text-gray-800">
 
-      <!-- Invoice -->
-      <div class="border rounded p-3 mb-4 bg-light">
-        <p><strong>Invoice ID:</strong> <?= $invoice_id ?></p>
-        <p><strong>Date:</strong> <?= $date ?></p>
-        <p><strong>Status:</strong> <span class="badge bg-warning text-dark">Unpaid</span></p>
-        <p><strong>Payment Method:</strong> Easypaisa - 03251387814 - <strong>Ali Abbas</strong></p>
-      </div>
+<?php include("header.php"); ?> 
 
-      <!-- Customer Info -->
-      <h5>🙍 Customer</h5>
-      <ul>
+<div class="max-w-3xl mx-auto mt-10 px-4">
+  <div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-6 text-indigo-600">🧾 Checkout & Upload Payment</h2>
+
+    <!-- Invoice Info -->
+    <div class="bg-yellow-50 p-4 rounded-md mb-6 border border-yellow-200">
+      <p><strong>Invoice ID:</strong> <?= $invoice_id ?></p>
+      <p><strong>Date:</strong> <?= $date ?></p>
+      <p><strong>Status:</strong> <span class="inline-block bg-yellow-300 text-yellow-900 text-xs px-2 py-1 rounded">Unpaid</span></p>
+      <p><strong>Payment Method:</strong> Easypaisa - <span class="text-gray-800 font-medium">03251387814 - Ali Abbas</span></p>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="mb-5">
+      <h3 class="text-lg font-semibold mb-2 text-gray-700">🙍 Customer</h3>
+      <ul class="text-sm text-gray-700 space-y-1">
         <li><strong>Name:</strong> <?= htmlspecialchars($name) ?></li>
         <li><strong>Email:</strong> <?= htmlspecialchars($email) ?></li>
         <li><strong>Phone:</strong> <?= htmlspecialchars($phone ?: '-') ?></li>
       </ul>
+    </div>
 
-      <!-- Package Info -->
-      <h5 class="mt-3">📦 Package</h5>
-      <ul>
+    <!-- Package Info -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-2 text-gray-700">📦 Package</h3>
+      <ul class="text-sm text-gray-700 space-y-1">
         <li><strong>Package:</strong> <?= $plan['name'] ?> (<?= $plan['accounts'] ?>)</li>
         <li><strong>Messages:</strong> <?= $plan['messages'] ?><?= $plan['media'] === 'Yes' ? ' + Media' : '' ?></li>
-        <li><strong>Amount:</strong> <span class="text-success fw-bold">PKR <?= number_format($plan['price_pkr']) ?></span></li>
+        <li><strong>Amount:</strong> <span class="text-green-600 font-medium">PKR <?= number_format($plan['price_pkr']) ?></span></li>
       </ul>
-
-      <!-- Payment Screenshot Upload -->
-      <form action="process_order.php" method="POST" enctype="multipart/form-data" class="mt-4">
-        <div class="mb-3">
-          <label class="form-label fw-bold">Pay & Submit Screenshot *</label>
-          <input type="file" name="screenshot" class="form-control" required>
-        </div>
-
-        <input type="hidden" name="name" value="<?= htmlspecialchars($name) ?>">
-        <input type="hidden" name="email" value="<?= htmlspecialchars($email) ?>">
-        <input type="hidden" name="phone" value="<?= htmlspecialchars($phone) ?>">
-        <input type="hidden" name="package" value="<?= $plan['name'] ?>">
-        <input type="hidden" name="price" value="<?= $plan['price_pkr'] ?>">
-        <input type="hidden" name="invoice_id" value="<?= $invoice_id ?>">
-
-        <button type="submit" class="btn btn-success w-100">Submit & Activate</button>
-      </form>
     </div>
+
+    <!-- Payment Screenshot Upload -->
+    <form action="process_order" method="POST" enctype="multipart/form-data" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Pay & Upload Screenshot <span class="text-red-500">*</span></label>
+        <input type="file" name="screenshot" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+      </div>
+
+      <!-- Hidden Inputs -->
+      <input type="hidden" name="name" value="<?= htmlspecialchars($name) ?>">
+      <input type="hidden" name="email" value="<?= htmlspecialchars($email) ?>">
+      <input type="hidden" name="phone" value="<?= htmlspecialchars($phone) ?>">
+      <input type="hidden" name="package" value="<?= $plan['name'] ?>">
+      <input type="hidden" name="price" value="<?= $plan['price_pkr'] ?>">
+      <input type="hidden" name="invoice_id" value="<?= $invoice_id ?>">
+
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md text-lg font-medium transition duration-200">
+        Submit & Activate
+      </button>
+    </form>
   </div>
 </div>
+
 </body>
 </html>

@@ -1,4 +1,10 @@
 RewriteEngine On
 
+# Remove .php extension from URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^/]+)$ $1.php [L]
+
+
 # Rewrite /send-message/<user_id> to send-message.php?user_id=<user_id>
 RewriteRule ^send-message/([^/]+)/?$ send-message.php?user_id=$1 [L,QSA]

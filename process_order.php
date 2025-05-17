@@ -1,19 +1,20 @@
+<?php include("header.php"); ?> 
 <?php
 include("db.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $name        = $_POST['name'] ?? '';
-  $email       = $_POST['email'] ?? '';
-  $phone       = $_POST['phone'] ?? '';
-  $package     = $_POST['package'] ?? '';
-  $price       = $_POST['price'] ?? '';
-  $invoice_id  = $_POST['invoice_id'] ?? '';
+  $name        = trim($_POST['name'] ?? '');
+  $email       = trim($_POST['email'] ?? '');
+  $phone       = trim($_POST['phone'] ?? '');
+  $package     = trim($_POST['package'] ?? '');
+  $price       = trim($_POST['price'] ?? '');
+  $invoice_id  = trim($_POST['invoice_id'] ?? '');
   $status      = 'pending';
   $created_at  = date('Y-m-d H:i:s');
 
   // Validate required fields
-  if (empty($name) || empty($email) || empty($package) || empty($price) || empty($invoice_id)) {
-    die("Missing required fields.");
+  if (!$name || !$email || !$package || !$price || !$invoice_id) {
+    exit("<div class='text-center mt-10 text-red-600 font-medium'>❌ Missing required fields.</div>");
   }
 
   // Handle file upload
@@ -28,20 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $allowed = ['jpg', 'jpeg', 'png', 'webp'];
 
     if (!in_array($extension, $allowed)) {
-      die("Invalid file type. Only JPG, JPEG, PNG, and WEBP allowed.");
+      exit("<div class='text-center mt-10 text-red-600 font-medium'>❌ Invalid file type. Only JPG, JPEG, PNG, and WEBP are allowed.</div>");
     }
 
     $new_filename = uniqid('ss_', true) . '.' . $extension;
     $upload_path = $upload_dir . $new_filename;
 
     if (!move_uploaded_file($_FILES['screenshot']['tmp_name'], $upload_path)) {
-      die("Failed to upload file.");
+      exit("<div class='text-center mt-10 text-red-600 font-medium'>❌ Failed to upload file.</div>");
     }
   } else {
-    die("Please upload your payment screenshot.");
+    exit("<div class='text-center mt-10 text-red-600 font-medium'>❌ Please upload your payment screenshot.</div>");
   }
 
-  // Save to database (PDO)
+  // Save to database
   try {
     $stmt = $conn->prepare("INSERT INTO orders (name, email, phone, package, price, invoice_id, screenshot, status, created_at)
                             VALUES (:name, :email, :phone, :package, :price, :invoice_id, :screenshot, :status, :created_at)");
@@ -58,18 +59,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->execute();
 
-    echo "<div style='padding:40px;text-align:center;font-family:sans-serif;'>
-            <h2>🎉 Thank You, $name!</h2>
-            <p>Your order has been received and is pending verification.</p>
-            <p><strong>Invoice ID:</strong> $invoice_id</p>
-            <p><strong>Payment Method:</strong> Easypaisa (03251387814 - Ali Abbas)</p>
-            <p>We will activate your plan shortly after confirming payment.</p>
-            <a href='index.php' style='margin-top:20px;display:inline-block;padding:10px 20px;background:#4f46e5;color:#fff;border-radius:6px;text-decoration:none;'>Back to Home</a>
-          </div>";
+    // ✅ Tailwind-styled thank you message
+    echo "
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+      <meta charset='UTF-8'>
+      <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+      <title>Order Received</title>
+      <link href='https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css' rel='stylesheet'>
+    </head>
+    <body class='bg-gray-50'>
+    
+      <div class='max-w-xl mx-auto mt-20 bg-white shadow-lg rounded-lg p-8 text-center'>
+        <h2 class='text-2xl font-bold text-green-600 mb-4'>🎉 Thank You, $name!</h2>
+        <p class='text-gray-700 mb-2'>Your order has been received and is pending verification.</p>
+        <p class='text-sm text-gray-600'><strong>Invoice ID:</strong> $invoice_id</p>
+        <p class='text-sm text-gray-600 mb-2'><strong>Payment Method:</strong> Easypaisa (03251387814 - Ali Abbas)</p>
+        <p class='text-sm text-gray-600'>We will activate your plan shortly after confirming payment.</p>
+        <a href='index' class='mt-6 inline-block px-5 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition'>Back to Home</a>
+      </div>
+    </body>
+    </html>
+    ";
+
   } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    echo "<div class='text-center mt-10 text-red-600 font-medium'>❌ Database error: " . $e->getMessage() . "</div>";
   }
 } else {
-  echo "Invalid request.";
+  echo "<div class='text-center mt-10 text-red-600 font-medium'>❌ Invalid request.</div>";
 }
+
 ?>

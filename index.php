@@ -21,39 +21,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors">
-    <!-- Navbar -->
-    <nav class="bg-white dark:bg-gray-800 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                        WhatsApp API
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <?php if ($isLoggedIn): ?>
-                        <a href="dashboard.php" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                            Dashboard
-                        </a>
-                        <a href="logout.php" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 transition">
-                            Logout
-                        </a>
-                    <?php else: ?>
-                        <a href="login.php" class="px-4 py-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition">
-                            Login
-                        </a>
-                        <a href="register.php" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                            Register
-                        </a>
-                    <?php endif; ?>
-                    <button id="theme-toggle" class="p-2 rounded-full focus:outline-none">
-                        <i class="fas fa-moon dark:hidden"></i>
-                        <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+
+<?php include("header.php");?> 
+    
 
     <!-- Hero Section -->
     <section class="hero-gradient text-white py-20">
@@ -61,7 +31,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
             <h1 class="text-4xl md:text-6xl font-bold mb-6">Automate WhatsApp Messages with API</h1>
             <p class="text-xl md:text-2xl mb-8 opacity-90">Send bulk messages, notifications, and more with our secure WhatsApp API service.</p>
             <div class="space-x-4">
-                <a href="<?= $isLoggedIn ? 'dashboard.php' : 'register.php' ?>" 
+                <a href="<?= $isLoggedIn ? 'dashboard' : 'register' ?>" 
                    class="px-8 py-3 bg-white text-indigo-600 font-bold rounded-lg hover:bg-gray-100 transition">
                     Get Started
                 </a>
@@ -110,70 +80,76 @@ $isLoggedIn = isset($_SESSION['user_id']);
             </div>
         </div>
     </section>
-  <!-- Features Section (unchanged) -->
-  <section id="features" class="py-16 bg-gray-50 dark:bg-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Key Features</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- … three feature cards … -->
+
+
+
+
+<!-- Pricing Section -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Pricing Plans</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+      <!-- Basic Plan -->
+      <div class="bg-gray-100 rounded-lg shadow-lg p-6 text-center">
+        <h3 class="text-xl font-bold mb-2 text-gray-900">Basic</h3>
+        <p class="text-4xl font-extrabold text-indigo-600 mb-1">$3<span class="text-lg font-medium">/mo</span></p>
+        <span class="text-sm text-gray-500">(Approx. PKR 999)</span>
+        <ul class="mt-4 mb-6 space-y-2 text-gray-700">
+          <li>✔ Unlimited Messages</li>
+          <li>✔ 1 WhatsApp Account</li>
+          <li>❌ Media Sending</li>
+        </ul>
+        <!-- if logged in go to order, else go to login with plan -->
+        <a href="<?= isset($_SESSION['user_id'])
+                        ? 'order?plan=basic'
+                        : 'login?plan=basic' ?>"
+           class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+          Get Started
+        </a>
       </div>
-    </div>
-  </section>
 
-  <!-- Pricing Section -->
-  <section class="py-16 bg-white dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Pricing Plans</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-        <!-- Basic Plan -->
-        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
-          <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Basic</h3>
-          <p class="text-4xl font-extrabold text-indigo-600 mb-1">$3<span class="text-lg font-medium">/mo</span></p>
-          <span class="text-sm text-gray-500 dark:text-gray-300">(Approx. PKR 999)</span>
-          <ul class="mt-4 mb-6 space-y-2 text-gray-600 dark:text-gray-300">
-            <li>✔ Unlimited Messages</li>
-            <li>✔ 1 WhatsApp Account</li>
-            <li>❌ Media Sending</li>
-          </ul>
-          <a href="order.php?plan=basic" class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Get Started
-          </a>
-        </div>
-
-        <!-- Pro Plan -->
-        <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 text-center border-2 border-indigo-600">
-          <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Pro</h3>
-          <p class="text-4xl font-extrabold text-indigo-600 mb-1">$7<span class="text-lg font-medium">/mo</span></p>
-          <span class="text-sm text-gray-500 dark:text-gray-300">(Approx. PKR 2000)</span>
-          <ul class="mt-4 mb-6 space-y-2 text-gray-600 dark:text-gray-300">
-            <li>✔ Unlimited Messages</li>
-            <li>✔ 2 WhatsApp Accounts</li>
-            <li>✔ Media Sending</li>
-          </ul>
-          <a href="order.php?plan=pro" class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Get Started
-          </a>
-        </div>
-
-        <!-- Enterprise Plan -->
-        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
-          <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Enterprise</h3>
-          <p class="text-4xl font-extrabold text-indigo-600 mb-1">$10<span class="text-lg font-medium">/mo</span></p>
-          <span class="text-sm text-gray-500 dark:text-gray-300">(Approx. PKR 3000)</span>
-          <ul class="mt-4 mb-6 space-y-2 text-gray-600 dark:text-gray-300">
-            <li>✔ Unlimited Messages</li>
-            <li>✔ 3 WhatsApp Accounts</li>
-            <li>✔ Media Sending</li>
-          </ul>
-          <a href="order.php?plan=enterprise" class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Get Started
-          </a>
-        </div>
-
+      <!-- Pro Plan -->
+      <div class="bg-gray-100 rounded-lg shadow-lg p-6 text-center border-2 border-indigo-600">
+        <h3 class="text-xl font-bold mb-2 text-gray-900">Pro</h3>
+        <p class="text-4xl font-extrabold text-indigo-600 mb-1">$7<span class="text-lg font-medium">/mo</span></p>
+        <span class="text-sm text-gray-500">(Approx. PKR 2000)</span>
+        <ul class="mt-4 mb-6 space-y-2 text-gray-700">
+          <li>✔ Unlimited Messages</li>
+          <li>✔ 2 WhatsApp Accounts</li>
+          <li>✔ Media Sending</li>
+        </ul>
+        <a href="<?= isset($_SESSION['user_id'])
+                        ? 'order?plan=pro'
+                        : 'login?plan=pro' ?>"
+           class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+          Get Started
+        </a>
       </div>
+
+      <!-- Enterprise Plan -->
+      <div class="bg-gray-100 rounded-lg shadow-lg p-6 text-center">
+        <h3 class="text-xl font-bold mb-2 text-gray-900">Enterprise</h3>
+        <p class="text-4xl font-extrabold text-indigo-600 mb-1">$10<span class="text-lg font-medium">/mo</span></p>
+        <span class="text-sm text-gray-500">(Approx. PKR 3000)</span>
+        <ul class="mt-4 mb-6 space-y-2 text-gray-700">
+          <li>✔ Unlimited Messages</li>
+          <li>✔ 3 WhatsApp Accounts</li>
+          <li>✔ Media Sending</li>
+        </ul>
+        <a href="<?= isset($_SESSION['user_id'])
+                        ? 'order?plan=enterprise'
+                        : 'login?plan=enterprise' ?>"
+           class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+          Get Started
+        </a>
+      </div>
+
     </div>
-  </section>
+  </div>
+</section>
+
+
 
   <!-- Integration Snippets -->
 <section class="py-16 bg-gray-50 dark:bg-gray-800">
