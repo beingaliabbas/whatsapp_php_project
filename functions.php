@@ -61,5 +61,32 @@ function getUserById($userId) {
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+function getSetting($key) {
+    global $conn; // Use PDO connection from db.php
+
+    $sql = "SELECT value FROM general_settings WHERE `key` = :key LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':key', $key, PDO::PARAM_STR);
+    $stmt->execute();
+
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ? $result['value'] : null;
+}
+function isPlanActivated($user) {
+    return (bool) ($user['plan_activated'] ?? 0);
+}
+
+function isPlanExpired($user) {
+    $endDate = $user['plan_end_date'] ?? null;
+    return $endDate && (strtotime($endDate) < time());
+}
+
+function getDaysLeft($user) {
+    if (!isPlanActivated($user) || isPlanExpired($user)) return null;
+
+    $now = new DateTime();
+    $end = new DateTime($user['plan_end_date']);
+    return $now->diff($end)->days;
+}
 
 ?>

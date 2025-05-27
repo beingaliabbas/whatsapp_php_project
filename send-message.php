@@ -1,14 +1,14 @@
 <?php
-// send-message.php
+require 'functions.php';
 
-// Ensure the request method is POST (or you can adjust as needed)
+header('Content-Type: application/json');
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["success" => false, "message" => "Method not allowed"]);
     exit;
 }
 
-// Get user_id from the URL query parameter (populated by the rewrite rule)
 if (!isset($_GET['user_id'])) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "User ID not provided"]);
@@ -16,18 +16,25 @@ if (!isset($_GET['user_id'])) {
 }
 $userId = $_GET['user_id'];
 
-// Get the request payload
 $rawInput = file_get_contents('php://input');
+$data = json_decode($rawInput, true);
 
-// (Optional) You can also add validation/sanitization of $userId and $rawInput here
+if (!is_array($data)) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Invalid JSON payload"]);
+    exit;
+}
 
-// Define the Node.js endpoint URL using the provided user_id
+$user = getUserById($userId);
+if (!$user) {
+    http_response_code(404);
+    echo json_encode(["success" => false, "message" => "User not found"]);
+    exit;
+}
+
+// Forward to Node.js server
 $nodeServerURL = "http://localhost:3000/send-message/{$userId}";
-
-// Initialize a cURL session to forward the request
 $ch = curl_init($nodeServerURL);
-
-// Set cURL options to forward the POST data and headers
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $rawInput);
@@ -35,16 +42,42 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Content-Length: ' . strlen($rawInput)
 ]);
-
-// Execute the request to the Node.js server
 $response = curl_exec($ch);
 $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-// Set the response code from Node.js (if desired)
-http_response_code($httpStatus);
+$resultArr = @json_decode($response, true);
 
-// Return the Node.js response to the client
-header('Content-Type: application/json');
+global $conn;
+$phoneNumber = $data['phoneNumber'] ?? null;
+$message = $data['message'] ?? null;
+
+// Increment api_calls
+$sql = "UPDATE users SET api_calls = api_calls + 1 WHERE user_id = :user_id";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+$stmt->execute();
+
+$status = 'failure';
+if ($resultArr && isset($resultArr['success']) && $resultArr['success']) {
+    // Increment messages_sent
+    $sql = "UPDATE users SET messages_sent = messages_sent + 1 WHERE user_id = :user_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+    $stmt->execute();
+    $status = 'success';
+}
+
+// Log the attempt
+$sql = "INSERT INTO user_message_logs (user_id, phone_number, sent_at, status, message_text) VALUES (:user_id, :phone_number, NOW(), :status, :message_text)";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+$stmt->bindParam(':phone_number', $phoneNumber, PDO::PARAM_STR);
+$stmt->bindParam(':status', $status, PDO::PARAM_STR);
+$stmt->bindParam(':message_text', $message, PDO::PARAM_STR);
+$stmt->execute();
+
+// Return Node.js response to client
+http_response_code($httpStatus);
 echo $response;
 ?>
