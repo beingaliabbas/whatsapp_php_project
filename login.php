@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user) {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
-        header("Location: " . (!empty($plan) ? "order?plan=" . urlencode($plan) : "dashboard"));
+        header("Location: " . (!empty($plan) ? "order?plan=" . urlencode($plan) : "account"));
         exit();
     } else {
         $errorMsg = "Invalid username or password.";

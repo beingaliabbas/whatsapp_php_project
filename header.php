@@ -20,8 +20,8 @@ $username = $isLoggedIn && isset($_SESSION['username']) ? $_SESSION['username'] 
                     <span class="text-gray-700 font-medium">
                         Hello, <?= htmlspecialchars($username) ?>
                     </span>
-                    <a href="dashboard" class="no-underline px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                        Dashboard
+                    <a href="account" class="no-underline px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                        Your account
                     </a>
                     <a href="logout" class="no-underline px-4 py-2 text-gray-600 hover:text-indigo-600 transition">
                         Logout
