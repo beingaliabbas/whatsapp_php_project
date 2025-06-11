@@ -32,15 +32,20 @@ if (!$user) {
     exit;
 }
 
+// Attach user info (user_id and email) to the outgoing data for logging/auditing
+$data['user_id'] = $userId;
+$data['user_email'] = $user['email'];
+$forwardPayload = json_encode($data);
+
 // Forward to Node.js server
 $nodeServerURL = "http://localhost:3000/send-message/{$userId}";
 $ch = curl_init($nodeServerURL);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $rawInput);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $forwardPayload);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Content-Length: ' . strlen($rawInput)
+    'Content-Length: ' . strlen($forwardPayload)
 ]);
 $response = curl_exec($ch);
 $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -68,10 +73,11 @@ if ($resultArr && isset($resultArr['success']) && $resultArr['success']) {
     $status = 'success';
 }
 
-// Log the attempt
-$sql = "INSERT INTO user_message_logs (user_id, phone_number, sent_at, status, message_text) VALUES (:user_id, :phone_number, NOW(), :status, :message_text)";
+// Log the attempt, now also storing user_email for tracking
+$sql = "INSERT INTO user_message_logs (user_id, user_email, phone_number, sent_at, status, message_text) VALUES (:user_id, :user_email, :phone_number, NOW(), :status, :message_text)";
 $stmt = $conn->prepare($sql);
 $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+$stmt->bindParam(':user_email', $user['email'], PDO::PARAM_STR);
 $stmt->bindParam(':phone_number', $phoneNumber, PDO::PARAM_STR);
 $stmt->bindParam(':status', $status, PDO::PARAM_STR);
 $stmt->bindParam(':message_text', $message, PDO::PARAM_STR);

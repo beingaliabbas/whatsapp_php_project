@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['plan'])) {
           <label for="whatsapp" class="block mb-1 text-sm font-semibold text-gray-700">WhatsApp Number</label>
           <input type="tel" id="whatsapp" name="whatsapp" required pattern="\d{10,15}"
                  class="form-input" autocomplete="tel" placeholder="e.g. 923001234567">
-          <span class="block text-xs text-gray-500 mt-1">Digits only, no + sign</span>
+          <span class="block text-xs text-gray-500 mt-1">Digits only, no + sign (This number will be use for verification)</span>
         </div>
 
         <div>

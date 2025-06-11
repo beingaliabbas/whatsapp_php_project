@@ -30,25 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - WhatsApp API Service</title>
-  <meta name="description" content="Sign in to manage your WhatsApp API account. Access secure messaging tools and developer dashboard.">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+<?php include("head.php"); ?>
+
 <body class="bg-gradient-to-br from-gray-100 to-blue-50 min-h-screen flex flex-col">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow py-4">
-    <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
-      <a href="index" class="text-2xl font-bold text-blue-700 tracking-tight">WhatsApp API</a>
-      <div class="space-x-4">
-        <a href="login" class="text-blue-700 font-medium">Login</a>
-        <a href="register" class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">Register</a>
-      </div>
-    </div>
-  </nav>
+  <?php include("header.php"); ?>
+
 
   <!-- Login Form Section -->
   <main class="flex-1 flex items-center justify-center">
